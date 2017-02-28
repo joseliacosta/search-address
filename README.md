@@ -15,5 +15,16 @@ I hope you enjoy this litte and modest project. If you have any questions or sug
 Also, to create the project and structure I'm trying [create-react-app](https://github.com/facebookincubator/create-react-app).
 
 
-##How to run
+##How to run: 
+```
+git clone this repo
+```
 
+Run
+
+```
+npm install
+npm start
+```
+
+Well done!
