@@ -21,7 +21,7 @@ class App extends Component {
   }
 
   setCep(event) {
-      this.setState({cep: event.target.value});
+    this.setState({cep: event.target.value});
   }
 
   setRua(event) {
@@ -72,7 +72,7 @@ class App extends Component {
   callback(result){
     this.setState({endereco: result} );
     console.log(result);
-   $.ajax({
+    $.ajax({
       url: 'https://maps.googleapis.com/maps/api/geocode/json?address='+result.logradouro+'-'+result.bairro+'-'+result.localidade,
       success: function(data){
         console.log("Latitude: " + data.results[0].geometry.location.lat + " Longitude: " + data.results[0].geometry.location.lng);
@@ -103,14 +103,14 @@ class App extends Component {
               <h2>Consultar</h2>
               <form className="form-inline" onSubmit={this.enviaForm}>
 
-               <InputCustom label="CEP"
-                      id="cep"
-                      type="text"
-                      name="cep"
-                      placeholder="00000-000"
-                      value={this.state.cep}
-                      onChange={this.setCep}
-               />
+                <InputCustom label="CEP"
+                             id="cep"
+                             type="text"
+                             name="cep"
+                             placeholder="00000-000"
+                             value={this.state.cep}
+                             onChange={this.setCep}
+                />
                 <ButtonCustom value="Buscar"></ButtonCustom>
               </form>
             </div>
