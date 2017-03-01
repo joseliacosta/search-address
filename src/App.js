@@ -16,7 +16,7 @@ class App extends Component {
     this.enviaForm = this.enviaForm.bind(this);
     this.callback = this.callback.bind(this);
 
-    this.state = {cep: '', endereco:[]};
+    this.state = {cep: '', endereco:[], location:[], lat:[], lng:[]};
 
   }
 
@@ -70,29 +70,28 @@ class App extends Component {
   }
 
   callback(result){
-    this.setState({endereco: result});
+    this.setState({endereco: result} );
     console.log(result);
-/*    $.ajax({
+   $.ajax({
       url: 'https://maps.googleapis.com/maps/api/geocode/json?address='+result.logradouro+'-'+result.bairro+'-'+result.localidade,
       success: function(data){
-        console.log("Latitude: " + data.results[0].geometry.location.lat + " Longitude: " + data.results[0].geometry.location.lng)
-        this.myMap(data.results[0].geometry.location.lat, data.results[0].geometry.location.lng );
+        console.log("Latitude: " + data.results[0].geometry.location.lat + " Longitude: " + data.results[0].geometry.location.lng);
+        this.setState({lat: data.results[0].geometry.location.lat});
+        this.setState({lng: data.results[0].geometry.location.lng});
+
+
       }.bind(this),
       error: function(error){
         console.log(error);
 
       }
-    });*/
+    });
 
   }
 
 
   render() {
-    const location = {
-      lat: 40.7575285,
-      lng: -73.9884469
 
-    }
 
     return (
 
@@ -129,14 +128,14 @@ class App extends Component {
                 </address>
 
 
-
-
-
               </div>
 
               <div className="panel-body">
-                <Map center={location} />
 
+                <p id="lat">{this.state.lat}</p>
+                <p id="lng">{this.state.lng}</p>
+
+                <Map lat={this.state.lat} lng={this.state.lng} />
               </div>
             </div>
           </div>
