@@ -132,10 +132,10 @@ class App extends Component {
 
               <div className="panel-body">
 
-                <p id="lat">{this.state.lat}</p>
-                <p id="lng">{this.state.lng}</p>
+                <p id="lat">{parseFloat(this.state.lat)}</p>
+                <p id="lng">{parseFloat(this.state.lng)}</p>
 
-                <Map lat={this.state.lat} lng={this.state.lng} />
+                <Map lat={parseFloat(this.state.lat)} lng={parseFloat(this.state.lng)} />
               </div>
             </div>
           </div>
