@@ -120,7 +120,6 @@ class App extends Component {
               this.state.showingError && <Error/>
             }
 
-
             {
               this.state.showingMap &&
                 <AddressInfo endereco={this.state.endereco}
