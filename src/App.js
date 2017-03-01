@@ -3,52 +3,35 @@ import './App.css';
 import $ from 'jquery';
 import InputCustom from './components/InputCustom';
 import ButtonCustom from './components/ButtonCustom';
-import Map from './components/Map';
+import AddressInfo from './components/AddressInfo';
+import Error from './components/Error';
 
 class App extends Component {
   constructor() {
     super();
-    this.setCep = this.setCep.bind(this);
-    this.setRua = this.setRua.bind(this);
-    this.setBairro = this.setBairro.bind(this);
-    this.setCidade = this.setCidade.bind(this);
-    this.setEstado = this.setEstado.bind(this);
+    this.state = {
+      cep: '',
+      endereco:[],
+      location:[],
+      lat:[],
+      lng:[],
+      showingMap: false,
+      showingError: false
+    };
     this.enviaForm = this.enviaForm.bind(this);
     this.callback = this.callback.bind(this);
-
-    this.state = {cep: '', endereco:[], location:[], lat:[], lng:[]};
-
-  }
-
-  setCep(event) {
-    this.setState({cep: event.target.value});
-  }
-
-  setRua(event) {
-    this.setState({rua: event.target.value});
+    this.closeMap = this.closeMap.bind(this);
 
   }
 
-  setBairro(event){
-    this.setState({bairro: event.target.value});
-
+  handleChange(inputName,event){
+    let handlingInput = {};
+    handlingInput[inputName] = event.target.value;
+    this.setState(handlingInput);
   }
-
-  setCidade(event){
-    this.setState({localidade: event.target.value});
-
-  }
-
-  setEstado(event){
-    this.setState({uf: event.target.value});
-  }
-
 
   enviaForm(event) {
-
     event.preventDefault();
-
-
     $.getJSON({
       url: 'https://viacep.com.br/ws/' + this.state.cep + '/json/?callback=callback ',
       dataType:'jsonp',
@@ -63,38 +46,56 @@ class App extends Component {
       success: function(data){
         this.callback(data);
       }.bind(this),
-      error: function(response){
-        console.log(response);
+      error:(response) =>{
+        if(response.status !== 200) {
+          this.setState({showingError: true});
+
+        }
       }
     });
   }
 
   callback(result){
-    this.setState({endereco: result} );
-    console.log(result);
+
     $.ajax({
       url: 'https://maps.googleapis.com/maps/api/geocode/json?address='+result.logradouro+'-'+result.bairro+'-'+result.localidade,
       success: function(data){
-        console.log("Latitude: " + data.results[0].geometry.location.lat + " Longitude: " + data.results[0].geometry.location.lng);
-        this.setState({lat: data.results[0].geometry.location.lat});
-        this.setState({lng: data.results[0].geometry.location.lng});
+        this.setState({
+          endereco: result,
+          lat: data.results[0].geometry.location.lat,
+          lng: data.results[0].geometry.location.lng,
+          showingMap:true,
+          showingError: false
 
-
+        });
       }.bind(this),
-      error: function(error){
-        console.log(error);
+      error:(error)=> {
+        if(error.status !== 200) {
+          this.setState({showingError: true});
+
+        }
 
       }
     });
-
   }
 
+  closeMap() {
+    this.setState({
+      showingMap: false,
+      showingError: false
+
+    });
+  }
+
+  cleanup() {
+    this.setState({cep: ''});
+
+  }
 
   render() {
 
 
     return (
-
       <div className="container">
         <div className="row">
           <div className="col-md-6 col-sm-12">
@@ -102,42 +103,34 @@ class App extends Component {
             <div className="well">
               <h2>Consultar</h2>
               <form className="form-inline" onSubmit={this.enviaForm}>
-
                 <InputCustom label="CEP"
                              id="cep"
                              type="text"
                              name="cep"
                              placeholder="00000-000"
                              value={this.state.cep}
-                             onChange={this.setCep}
+                             required
+                             onChange={this.handleChange.bind(this,'cep')}
                 />
                 <ButtonCustom value="Buscar"></ButtonCustom>
               </form>
+
             </div>
-            <div className="panel panel-default">
-              <div className="panel-heading">
-                <a href="">
-                  <i className="glyphicon glyphicon-remove-circle pull-right"></i>
-                </a>
-
-                <address>
-                  <strong>{this.state.endereco.logradouro}</strong><br/>
-                  {this.state.endereco.bairro}<br/>
-                  {this.state.endereco.localidade} - {this.state.endereco.uf}<br/>
-                  {this.state.endereco.cep}
-                </address>
+            {
+              this.state.showingError && <Error/>
+            }
 
 
-              </div>
+            {
+              this.state.showingMap &&
+                <AddressInfo endereco={this.state.endereco}
+                             lat={this.state.lat}
+                             lng={this.state.lng}
+                             handleClose={() => { this.closeMap(); this.cleanup()} }
 
-              <div className="panel-body">
+              />
+            }
 
-                <p id="lat">{parseFloat(this.state.lat)}</p>
-                <p id="lng">{parseFloat(this.state.lng)}</p>
-
-                <Map lat={parseFloat(this.state.lat)} lng={parseFloat(this.state.lng)} />
-              </div>
-            </div>
           </div>
         </div>
       </div>
